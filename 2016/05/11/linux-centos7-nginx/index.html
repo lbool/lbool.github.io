@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CentOS,Nginx,Linux," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="写在前面的话每次在Linux搭建web环境都要一顿google求参考文档，这次索性写个简单的文章记录一下。其实Linux下编译安装主要就是这几个步骤。  安装编译工具、依赖包及下载源码包 解压编译 安装 启动">
+<meta name="keywords" content="CentOS,Nginx,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7.0下编译安装Nginx 1.10.0">
+<meta property="og:url" content="http://yoursite.com/2016/05/11/linux-centos7-nginx/index.html">
+<meta property="og:site_name" content="lbool">
+<meta property="og:description" content="写在前面的话每次在Linux搭建web环境都要一顿google求参考文档，这次索性写个简单的文章记录一下。其实Linux下编译安装主要就是这几个步骤。  安装编译工具、依赖包及下载源码包 解压编译 安装 启动">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-05-23T03:00:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CentOS7.0下编译安装Nginx 1.10.0">
+<meta name="twitter:description" content="写在前面的话每次在Linux搭建web环境都要一顿google求参考文档，这次索性写个简单的文章记录一下。其实Linux下编译安装主要就是这几个步骤。  安装编译工具、依赖包及下载源码包 解压编译 安装 启动">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/05/11/linux-centos7-nginx/"/>
+
+
+
+
+
+  <title>CentOS7.0下编译安装Nginx 1.10.0 | lbool</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">lbool</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">lbool's blog</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/11/linux-centos7-nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lbool">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="lbool">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CentOS7.0下编译安装Nginx 1.10.0</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-11T11:11:11+08:00">
+                2016-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h2><p>每次在Linux搭建web环境都要一顿google求参考文档，这次索性写个简单的文章记录一下。其实Linux下编译安装主要就是这几个步骤。<br></p>
+<ul>
+<li>安装编译工具、依赖包及下载源码包</li>
+<li>解压编译</li>
+<li>安装</li>
+<li>启动<a id="more"></a>
+</li>
+</ul>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="安装编译工具、依赖包"><a href="#安装编译工具、依赖包" class="headerlink" title="安装编译工具、依赖包"></a>安装编译工具、依赖包</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install gcc gcc-c++ autoconf automake</span><br><span class="line">$ yum -y install zlib zlib-devel openssl openssl-devel pcre-devel</span><br></pre></td></tr></table></figure>
+<p>以上安装的是一些主要的依赖包，具体可根据自己情况或者报错信息提示安装或修改</p>
+<h3 id="新建匿名用户和用户组"><a href="#新建匿名用户和用户组" class="headerlink" title="新建匿名用户和用户组"></a>新建匿名用户和用户组</h3><p>新建的用户组和用户主要是在编译配置的时候指定nginx运行的用户和用户组。这样指定后以后配置使用也方便。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo groupadd -r nginx</span><br><span class="line"></span><br><span class="line">$ sudo useradd -s /sbin/nologin -g nginx -r nginx</span><br></pre></td></tr></table></figure></p>
+<h2 id="Nginx编译安装"><a href="#Nginx编译安装" class="headerlink" title="Nginx编译安装"></a>Nginx编译安装</h2><h3 id="下载源码包"><a href="#下载源码包" class="headerlink" title="下载源码包"></a>下载源码包</h3><p>我一般从官网下载<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://nginx.org/download/nginx-1.10.0.tar.gz</span><br></pre></td></tr></table></figure></p>
+<h3 id="解压并编译"><a href="#解压并编译" class="headerlink" title="解压并编译"></a>解压并编译</h3><h5 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.10.0.tar.gz</span><br></pre></td></tr></table></figure>
+<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./configure \</span><br><span class="line">--prefix=/usr/<span class="built_in">local</span>/nginx \</span><br><span class="line">--conf-path=/etc/nginx/nginx.conf \ </span><br><span class="line">--user=nginx \</span><br><span class="line">--group=nginx \</span><br></pre></td></tr></table></figure>
+<p>配置没毛病的话可以看到这些信息<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Configuration summary</span><br><span class="line">  + using system PCRE library</span><br><span class="line">  + OpenSSL library is not used</span><br><span class="line">  + md5: using system crypto library</span><br><span class="line">  + sha1: using system crypto library</span><br><span class="line">  + using system zlib library</span><br><span class="line"></span><br><span class="line">  nginx path prefix: <span class="string">"/usr/local/nginx"</span></span><br><span class="line">  nginx binary file: <span class="string">"/usr/local/nginx/sbin/nginx"</span></span><br><span class="line">  nginx modules path: <span class="string">"/usr/local/nginx/modules"</span></span><br><span class="line">  nginx configuration prefix: <span class="string">"/etc/nginx"</span></span><br><span class="line">  nginx configuration file: <span class="string">"/etc/nginx/nginx.conf"</span></span><br><span class="line">  nginx pid file: <span class="string">"/usr/local/nginx/logs/nginx.pid"</span></span><br><span class="line">  nginx error <span class="built_in">log</span> file: <span class="string">"/usr/local/nginx/logs/error.log"</span></span><br><span class="line">  nginx http access <span class="built_in">log</span> file: <span class="string">"/usr/local/nginx/logs/access.log"</span></span><br><span class="line">  nginx http client request body temporary files: <span class="string">"client_body_temp"</span></span><br><span class="line">  nginx http proxy temporary files: <span class="string">"proxy_temp"</span></span><br><span class="line">  nginx http fastcgi temporary files: <span class="string">"fastcgi_temp"</span></span><br><span class="line">  nginx http uwsgi temporary files: <span class="string">"uwsgi_temp"</span></span><br><span class="line">  nginx http scgi temporary files: <span class="string">"scgi_temp"</span></span><br></pre></td></tr></table></figure></p>
+<p>以上编译参数只是配置了主要的东西，全部配置参数说明你可以通过这个命令查看<br><code>./configure --help</code></p>
+<h5 id="编译并安装"><a href="#编译并安装" class="headerlink" title="编译并安装"></a>编译并安装</h5><p><code>$ make &amp;&amp; make install</code><br>启动等命令<br>须进入到<code>/usr/local/nginx/sbin</code>目录下<br></p>
+<h5 id="启动："><a href="#启动：" class="headerlink" title="启动："></a>启动：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nginx</span><br></pre></td></tr></table></figure>
+<h5 id="停止："><a href="#停止：" class="headerlink" title="停止："></a>停止：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nginx -s stop</span><br></pre></td></tr></table></figure>
+<h5 id="重启："><a href="#重启：" class="headerlink" title="重启："></a>重启：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nginx -s reload</span><br></pre></td></tr></table></figure>
+<p>以上各个步骤报错的话根据报错提示缺啥装啥，不犯几次错误都不好意思说自己配过环境。PS：有问题可留言讨论哦</p>
+<hr>
+<p>此文章更新于2016年5月23日 00:20 😂</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CentOS/" rel="tag"># CentOS</a>
+          
+            <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          
+            <a href="/tags/Linux/" rel="tag"># Linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/09/laravel-article-3/" rel="next" title="laravel系列笔记三：MVC之C(控制器)">
+                <i class="fa fa-chevron-left"></i> laravel系列笔记三：MVC之C(控制器)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/12/centos7-php5.6.12/" rel="prev" title="CentOS7.0下编译安装PHP 5.6.21">
+                CentOS7.0下编译安装PHP 5.6.21 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/img/avatar.png"
+                alt="lbool" />
+            
+              <p class="site-author-name" itemprop="name">lbool</p>
+              <p class="site-description motion-element" itemprop="description">一枚业余写代码的段子手😍</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yourname" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yourname@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#写在前面的话"><span class="nav-number">1.</span> <span class="nav-text">写在前面的话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">2.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装编译工具、依赖包"><span class="nav-number">2.1.</span> <span class="nav-text">安装编译工具、依赖包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建匿名用户和用户组"><span class="nav-number">2.2.</span> <span class="nav-text">新建匿名用户和用户组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx编译安装"><span class="nav-number">3.</span> <span class="nav-text">Nginx编译安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载源码包"><span class="nav-number">3.1.</span> <span class="nav-text">下载源码包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解压并编译"><span class="nav-number">3.2.</span> <span class="nav-text">解压并编译</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#解压"><span class="nav-number">3.2.0.1.</span> <span class="nav-text">解压</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置"><span class="nav-number">3.2.0.2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#编译并安装"><span class="nav-number">3.2.0.3.</span> <span class="nav-text">编译并安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#启动："><span class="nav-number">3.2.0.4.</span> <span class="nav-text">启动：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#停止："><span class="nav-number">3.2.0.5.</span> <span class="nav-text">停止：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#重启："><span class="nav-number">3.2.0.6.</span> <span class="nav-text">重启：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lbool</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+  <div class="footer-custom">Hosted by <a target="_blank" href="https://lbool.github.com">GitHub</a></div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
