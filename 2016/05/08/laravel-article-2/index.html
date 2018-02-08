@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="lbool">
 <meta property="og:description" content="写在前面的话Laravel的路由功能非常强大，比起一般的框架比如ThinkPHP自动解析URL到控制器方法，这种方式更容易控制。一般我们对路由的基本要求包括：  路由参数控制 快捷准确的生成URL 中间件处理(或钩子)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2016-05-20T16:25:10.000Z">
+<meta property="og:updated_time" content="2018-02-08T06:28:18.678Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="laravel系列笔记二：路由的使用">
 <meta name="twitter:description" content="写在前面的话Laravel的路由功能非常强大，比起一般的框架比如ThinkPHP自动解析URL到控制器方法，这种方式更容易控制。一般我们对路由的基本要求包括：  路由参数控制 快捷准确的生成URL 中间件处理(或钩子)">
@@ -397,6 +397,7 @@
 <h5 id="路由群组相关"><a href="#路由群组相关" class="headerlink" title="路由群组相关"></a>路由群组相关</h5><p>之所以使用路由群组是为了把使用相同中间件，命名空间，参数限制的路由归类，共用属性以数组形式存在。<br><br>其中中间件是<code>middleware</code>,命名空间是<code>namespace</code>,子域名路由是<code>domain</code>,路由前缀是<code>prefix</code>。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Route::group([<span class="string">'middleware'</span> =&gt; <span class="string">'auth'</span>], <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">	Route::get(<span class="string">'/user'</span>,<span class="string">'UserController@profile'</span>);</span><br><span class="line">	Route::get(<span class="string">'/article'</span>,<span class="string">'ArticleController@detail'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h5 id="CSRF保护"><a href="#CSRF保护" class="headerlink" title="CSRF保护"></a>CSRF保护</h5><p>CSRF就是laravel为了防止伪造请求的一种处理逻辑.<br><br>一般使用 Blade 模板引擎 时laravel会自动才表单中加入，或者手动加入<code>csrf_field()</code><br><br>如果你希望在某些路由中不适用CSRF验证，可以在<code>VerifyCsrfToken</code> 中间件中增加 <code>$except</code> 属性。</p>
 <p>此文章更新于2016年5月20日21:44 😂</p>
+
       
     </div>
     
@@ -550,7 +551,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -572,7 +573,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
