@@ -87,13 +87,13 @@
 <meta property="og:site_name" content="lbool">
 <meta property="og:description" content="php包括三大部分 php内核  负责处理输入和输出,文件流 错误处理 对代码进行语法分析等  php引擎 (Zend Engine，facebook的HHVM) 负责把php代码转化为机器语言或者中间语言 然后在虚拟机上运行  php扩展(模块)  可以理解为一组类库或者链接流等，作用是与第三服务或者系统进行通信，比如mysql扩展：一般情况扩展需要实现四个方法">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2017/11/09/img/0_13323071462DzD.jpg">
-<meta property="og:image" content="http://yoursite.com/2017/11/09/img/51B04C27-DF61-496A-97DE-93A8EB993164.png">
-<meta property="og:updated_time" content="2018-02-08T02:59:31.597Z">
+<meta property="og:image" content="http://yoursite.com/img/0_13323071462DzD.jpg">
+<meta property="og:image" content="http://yoursite.com/img/51B04C27-DF61-496A-97DE-93A8EB993164.png">
+<meta property="og:updated_time" content="2018-02-08T03:22:40.040Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php生命周期">
 <meta name="twitter:description" content="php包括三大部分 php内核  负责处理输入和输出,文件流 错误处理 对代码进行语法分析等  php引擎 (Zend Engine，facebook的HHVM) 负责把php代码转化为机器语言或者中间语言 然后在虚拟机上运行  php扩展(模块)  可以理解为一组类库或者链接流等，作用是与第三服务或者系统进行通信，比如mysql扩展：一般情况扩展需要实现四个方法">
-<meta name="twitter:image" content="http://yoursite.com/2017/11/09/img/0_13323071462DzD.jpg">
+<meta name="twitter:image" content="http://yoursite.com/img/0_13323071462DzD.jpg">
 
 
 
@@ -393,14 +393,14 @@
 <p>php的运行模式分为web模式和cli模式，无论哪种模式，讨论都是一样的，都输入SAPI(Server Application Program Interface)，经历的执行阶段都是相同的。</p>
 <h4 id="web模式"><a href="#web模式" class="headerlink" title="web模式"></a>web模式</h4><p>通过Apache，Nginx等web服务器执行的php处理过程。Apache通过Apache的php模块完成请求处理，nginx通过php-fpm(fast-cgi)完成请求处理。</p>
 <h4 id="cli模式"><a href="#cli模式" class="headerlink" title="cli模式"></a>cli模式</h4><p>执行执行php程序,比如<code>php xxx.php</code>，属于cli模式。</p>
-<h3 id="运行流程"><a href="#运行流程" class="headerlink" title="运行流程"></a>运行流程</h3><p>先上图更清晰<br><img src="../img/0_13323071462DzD.jpg" alt="0_13323071462DzD"></p>
+<h3 id="运行流程"><a href="#运行流程" class="headerlink" title="运行流程"></a>运行流程</h3><p>先上图更清晰<br><img src="/img/0_13323071462DzD.jpg" alt="0_13323071462DzD"></p>
 <h4 id="1-模块初始化"><a href="#1-模块初始化" class="headerlink" title="1. 模块初始化"></a>1. 模块初始化</h4><p>由Apache模块或者fpm启动php内核，加载每个模块的代码并且调用模块初始化方法(MINIT),为模块分配系统资源等，将这些模块切换为可用状态。(这一步与请求无关)</p>
 <h4 id="2-请求初始化"><a href="#2-请求初始化" class="headerlink" title="2. 请求初始化"></a>2. 请求初始化</h4><p>在请求到达之后，SAPI会将控制权交到PHP层，PHP初始化本次请求用到的所有环境变量，并且对每个模块调用RINIT方法，根据请求数据初始化模块特定的环境变量等信息，这个阶段各模块初始化的工作更多的和本次请求有关，比如启用Session模块后，这个阶段会初始化$_SESSION变量，并将相关内容读入。(这一步与请求有关)</p>
 <h4 id="3-引擎执行阶段"><a href="#3-引擎执行阶段" class="headerlink" title="3. 引擎执行阶段"></a>3. 引擎执行阶段</h4><p>这个阶段主要是发生在请求初始化之后，此时控制权在Zend Engine(以下简称ZE)手中，ZE复制把PHP脚本代码翻译成机器码(CPU可以直接执行，并且执行速度最快)，翻译后逐步运行，如果运行过程中需要用到调用扩展，此时ZE会把控制权交给扩展，并把参数绑定到需要调用的扩展函数上，直到扩展函数执行完毕。</p>
 <h4 id="4-请求执行完成"><a href="#4-请求执行完成" class="headerlink" title="4. 请求执行完成"></a>4. 请求执行完成</h4><p>通常脚本执行完成的标志是执行到脚本尾部或者碰到exit()或者die()方法。此时脚本进入结束阶段，与请求初始化阶段相对应，这个阶段会循环调用所有扩展的RSHUTDOWN()方法，释放并关闭此次请求与扩展直接的链接，释放扩展该请求相关的环境变量等其他工作，同时ZE启动垃圾回收，对这次请求期间设置的所有变量进行unset操作，释放内存。</p>
 <h4 id="5-关闭模块"><a href="#5-关闭模块" class="headerlink" title="5. 关闭模块"></a>5. 关闭模块</h4><p>脚本执行完成后，SIAP也准备关闭了，此时PHP调用每个模块的MSHUTDOWN方法，各个模块最后一次释放内存，回收之前分配的所有资源，切换为不用状态，SIAP把结果返回给浏览器或者终端，至此，整个请求处理彻底结束，SIAP也彻底关闭。</p>
 <h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>对于cli模式，会每一次执行都会经历上述的完整周期。<br>但是对于web模式，一般情况下是多进程处理，比如Apache的mod_php和php-fpm的fast-cgi，<br>每个进程的生命周期内可以处理多个请求；每个处理请求过程经历的不是完整的生命周期，对应的是上图中的individual request周期。也就是说模块的初始化和关闭阶段只是在进程启动的时候执行一次。之后进程周期内处理请求都是在请求开始和请求完成之间来回。</p>
-<h3 id="CGI和PHP-FPM的关系"><a href="#CGI和PHP-FPM的关系" class="headerlink" title="CGI和PHP-FPM的关系"></a>CGI和PHP-FPM的关系</h3><h4 id="CGI是什么"><a href="#CGI是什么" class="headerlink" title="CGI是什么"></a>CGI是什么</h4><p>CGI是(通用网关接口)Common Gateway Interface的简称，是方便在web服务器和动态请求处理程序之前的通信的一个协议。<br>下图是CGI的调用流程图<br><img src="../img/51B04C27-DF61-496A-97DE-93A8EB993164.png" alt="51B04C27-DF61-496A-97DE-93A8EB993164"><br>其中socket分为两种：</p>
+<h3 id="CGI和PHP-FPM的关系"><a href="#CGI和PHP-FPM的关系" class="headerlink" title="CGI和PHP-FPM的关系"></a>CGI和PHP-FPM的关系</h3><h4 id="CGI是什么"><a href="#CGI是什么" class="headerlink" title="CGI是什么"></a>CGI是什么</h4><p>CGI是(通用网关接口)Common Gateway Interface的简称，是方便在web服务器和动态请求处理程序之前的通信的一个协议。<br>下图是CGI的调用流程图<br><img src="/img/51B04C27-DF61-496A-97DE-93A8EB993164.png" alt="51B04C27-DF61-496A-97DE-93A8EB993164"><br>其中socket分为两种：</p>
 <ol>
 <li>unix domain socket(同一机器上，两个或多个进程间进行通信，cgi和web server必须在同一机器上)</li>
 <li>TCP(ip socket),这种允许cgi和web server在不同机器上<br>两者的区别可能是unix domain socket通信发生在系统内部，TCP发生在不同或同一机器间，会在网络上进行传播。理论上，UNIX的形式效率会更高。<h4 id="PHP-FPM是什么"><a href="#PHP-FPM是什么" class="headerlink" title="PHP-FPM是什么"></a>PHP-FPM是什么</h4>php-fpm是(FastCGI进程管理器)PHP FastCGI Process Manager的缩写。那FastCGI又是什么东西呢，顾名思义，FastCGI是更快的CGI，是CGI的超级进化版。那么CGI和FastCGI比慢在哪呢,在CGI模式下，每次CGI程序接收到请求后，都会fork出一个对应的进程来处理请求。处理完毕会通过CGI返回给web server，可想而知，在高并发情况下，CGI会频繁的fork进程，每一次fork都经历一次完成的PHP生命周期，造成大量的开销，给运行CGI的机器造成很大的压力。其实通过上图来看 有一部分开销是可以避免掉的，只需要individual request部分就行，CGI则对应完整的PHP Lifescan，这也是CGI和FastCGI的本质区别。<br>PHP-FPM的工作方式为：有一个master进程可以管理多个pool(进程池)，每个pool由master进程监听不同的端口，每个pool中又可以存在许多不同的worker进程。每个worker进程都常驻内存，并且随着请求数量的增多可以动态的增加，就是所谓的prefork动态增加；且每个worker进程都在达到最大的处理请求之后会自动重启，如果进程没有达到最大的请求数量而意外挂掉，则master会重启该worker进程。(关于php-fpm的详细工作原理会另开文介绍)</li>
